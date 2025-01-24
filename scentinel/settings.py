@@ -76,12 +76,22 @@ WSGI_APPLICATION = "scentinel.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
+#DATABASES = {
+#    "default": {
+#        "ENGINE": "django.contrib.gis.db.backends.postgis",
+#        "NAME": "scentinel",
+#        "USER": "postgres",
+#    },
+#}
 DATABASES = {
-    "default": {
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "NAME": "scentinel",
-        "USER": "postgres",
-    },
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': "db",
+        'PORT': 5432,
+    }
 }
 
 
