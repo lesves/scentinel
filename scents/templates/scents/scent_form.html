@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block extrahead %}
+	{{ form.media }}
+
+	<style>
+		.dj_map_wrapper {
+			float: none !important;
+			width: 100%;
+			display: block;
+			margin: 0 auto;
+		}
+
+		.dj_map {
+			width: 100%;
+			height: 15rem;
+		}
+
+		.clear_features {
+			display: none;
+		}
+	</style>
+
+	<script>
+	function set_loc () {
+	    if (navigator.geolocation) {
+	        navigator.geolocation.getCurrentPosition(function (position) {
+	            const lat = position.coords.latitude;
+	            const lng = position.coords.longitude;
+	            const lonLat = ol.proj.fromLonLat([lng, lat]);
+
+	            const feature = new ol.Feature({
+	                geometry: new ol.geom.Point(lonLat),
+	            });
+
+	            geodjango_loc_gps.featureCollection.clear();
+	            geodjango_loc_gps.featureCollection.push(feature);
+
+			    geodjango_loc_gps.map.setView(new ol.View({
+			        center: lonLat,
+			        zoom: 15
+			    }));
+
+	            const inputField = document.getElementById("id_loc_gps");
+	            inputField.value = JSON.dump({
+	            	type: "Point",
+	            	coordinates: lonLat
+	            });
+	        });
+	    } else {
+	        alert("Geolocation is not supported by your browser.");
+	    }
+	};
+	</script>
+{% endblock %}
+
+{% block main %}
+	<article>
+		<form method="POST">
+			{% csrf_token %}
+			<fieldset>
+				<h2>Location</h2>
+				{{ form.loc_gps }}
+				<button type="button" onclick="set_loc();">Use my location</button>
+				<label>
+					{{ form.loc_desc.field.label }}
+					{{ form.loc_desc }}
+				</label>
+			</fieldset>
+			<fieldset>
+				<h2>Weather</h2>
+				<table>
+					<tr><td>{{ form.temperature.field.label }}</td><td>{{ form.temperature }}</td></tr>
+					<tr><td>{{ form.humidity.field.label }}</td><td>{{ form.humidity }}</td></tr>
+					<tr><td>{{ form.was_raining.field.label }}</td><td>{{ form.was_raining }}</td></tr>
+					<tr><td>{{ form.was_sunny.field.label }}</td><td>{{ form.was_sunny }}</td></tr>
+				</table>
+				{{ form.weather_note.field.label }}
+				{{ form.weather_note }}
+			</fieldset>
+			<fieldset>
+				<h2>Scent</h2>
+				<label>
+					{{ form.scent_desc.field.label }}
+					{{ form.scent_desc }}
+				</label>
+				<label>
+					{{ form.sampling_params.field.label }}
+					{{ form.sampling_params }}
+				</label>
+			</fieldset>
+			<fieldset>
+				<h2>Other</h2>
+				<label>
+					{{ form.author.field.label }}
+					{{ form.author }}
+				</label>
+				<label>
+					{{ form.note.field.label }}
+					{{ form.note }}
+				</label>
+			</fieldset>
+			<input type="submit" />
+		</form>
+	</article>
+{% endblock %}
