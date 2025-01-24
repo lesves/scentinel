@@ -19,8 +19,8 @@ services:
     expose:
       - 8000
     volumes:
-      - static:/app/backend/static
-      - data:/app/backend/data
+      - static:/app/static
+      - data:/app/data
 #      - ${PWD}/.env:/app/.env
     depends_on:
       db:
@@ -29,8 +29,8 @@ services:
   nginx:
     build: ./nginx
     volumes:
-      - static:/app/backend/static/
-      - data:/app/backend/data/
+      - static:/app/static/
+      - data:/app/data/
     ports:
       - 1337:80
     depends_on:
