@@ -76,23 +76,23 @@ WSGI_APPLICATION = "scentinel.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-#DATABASES = {
-#    "default": {
-#        "ENGINE": "django.contrib.gis.db.backends.postgis",
-#        "NAME": "scentinel",
-#        "USER": "postgres",
-#    },
-#}
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': "db",
-        'PORT': 5432,
-    }
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "scentinel",
+        "USER": "postgres",
+    },
 }
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#        'NAME': 'postgres',
+#        'USER': 'postgres',
+#        'PASSWORD': 'postgres',
+#        'HOST': "db",
+#        'PORT': 5432,
+#    }
+#}
 
 
 # Password validation
@@ -131,6 +131,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = "static/"
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = "media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

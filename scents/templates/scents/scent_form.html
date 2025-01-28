@@ -42,7 +42,7 @@
 			    }));
 
 	            const inputField = document.getElementById("id_loc_gps");
-	            inputField.value = JSON.dump({
+	            inputField.value = JSON.stringify({
 	            	type: "Point",
 	            	coordinates: lonLat
 	            });
@@ -51,13 +51,47 @@
 	        alert("Geolocation is not supported by your browser.");
 	    }
 	};
+
+	let form_num = 0;
+	function upload() {
+		let controls = document.getElementById("controls");
+
+		let item = document.createElement("article");
+		item.innerHTML = `<div class="grid">{{ attachments.empty_form.file }}{{ attachments.empty_form.note }}</div>`.replaceAll("__prefix__", form_num);
+
+		let total = document.querySelector("#id_attachments-TOTAL_FORMS");
+
+		controls.parentNode.insertBefore(item.cloneNode(true), controls);
+
+		form_num++;
+		total.setAttribute("value", `${form_num+1}`);
+	}
 	</script>
 {% endblock %}
 
 {% block main %}
-	<article>
-		<form method="POST">
+	<form method="POST" enctype=multipart/form-data>
+		<article>
 			{% csrf_token %}
+			<fieldset>
+				<h2>Scent</h2>
+				<label>
+					{{ form.name.field.label }}
+					{{ form.name }}
+				</label>
+				<label>
+					{{ form.author.field.label }}
+					{{ form.author }}
+				</label>
+				<label>
+					{{ form.scent_desc.field.label }}
+					{{ form.scent_desc }}
+				</label>
+				<label>
+					{{ form.sampling_params.field.label }}
+					{{ form.sampling_params }}
+				</label>
+			</fieldset>
 			<fieldset>
 				<h2>Location</h2>
 				{{ form.loc_gps }}
@@ -79,28 +113,29 @@
 				{{ form.weather_note }}
 			</fieldset>
 			<fieldset>
-				<h2>Scent</h2>
-				<label>
-					{{ form.scent_desc.field.label }}
-					{{ form.scent_desc }}
-				</label>
-				<label>
-					{{ form.sampling_params.field.label }}
-					{{ form.sampling_params }}
-				</label>
-			</fieldset>
-			<fieldset>
 				<h2>Other</h2>
-				<label>
-					{{ form.author.field.label }}
-					{{ form.author }}
-				</label>
 				<label>
 					{{ form.note.field.label }}
 					{{ form.note }}
 				</label>
 			</fieldset>
+		</article>
+
+		{{ attachments.management_form }}
+
+		{% for attachment in attachments %}
+			<article>
+				{{ attachment.as_p }}
+			</article>
+		{% endfor %}
+
+		<article id="controls">
+			<div role="group">
+				<button type="button" class="secondary">Take photo</button>
+				<button type="button" class="secondary" onclick="upload();">Upload photo/video</button>
+			</div>
+
 			<input type="submit" />
-		</form>
-	</article>
+		</article>
+	</form>
 {% endblock %}

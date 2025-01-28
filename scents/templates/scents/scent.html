@@ -3,7 +3,7 @@
 
 {% block extrahead %}
 <style>
-	article h2 {
+	article h2, article h3 {
 		text-align: center;
 	}
 
@@ -43,5 +43,11 @@
 			<tr><th>{% verbose_name object "author" %}</th><td>{{ object.author }}</td></tr>
 			<tr><th>{% verbose_name object "note" %}</th><td>{{ object.note }}</td></tr>
 		</table>
+		<h3>Attachments</h3>
+		<ul>
+			{% for attachment in object.attachments.all %}
+				<li><a href="{{ attachment.file.url }}">{{ attachment.file.url }}</a></li>
+			{% endfor %}
+		</ul>
 	</article>
 {% endblock %}

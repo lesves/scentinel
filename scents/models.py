@@ -23,11 +23,11 @@ class Scent(models.Model):
     weather_note = models.TextField(verbose_name="Weather note", blank=True)
 
     # Scent data
+    name = models.TextField(verbose_name="Scent name")
+    author = models.TextField(verbose_name="Author")
+    
     scent_desc = models.TextField(verbose_name="Scent description")
     sampling_params = models.TextField(verbose_name="Sampling parameters", blank=True)
-
-    # Author
-    author = models.TextField(verbose_name="Author")
 
     # Special
     note = models.TextField(blank=True)
@@ -54,7 +54,9 @@ class Scent(models.Model):
 
 class Attachment(models.Model):
     def upload_to(instance, filename):
-        return "".format(instance.user.id, filename)
+        return "{}/{}".format(instance.user.id, filename)
 
     scent = models.ForeignKey(Scent, related_name="attachments", on_delete=models.CASCADE)
+
     file = models.FileField(upload_to=upload_to)
+    note = models.TextField(blank=True, verbose_name="Note")
