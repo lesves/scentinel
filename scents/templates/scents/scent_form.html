@@ -19,7 +19,15 @@
 		.clear_features {
 			display: none;
 		}
+
+		.gcd-gl-input {
+			height: auto !important;
+			margin: initial !important;
+		}
 	</style>
+
+	<link href="https://cdn.jsdelivr.net/npm/ol-geocoder/dist/ol-geocoder.min.css" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/ol-geocoder/dist/ol-geocoder.js"></script>
 
 	<script>
 	function watch_point(event) {
@@ -83,6 +91,19 @@
 	};
 
 	window.addEventListener("load", () => {
+		const geocoder = new Geocoder("nominatim", {
+			provider: "osm",
+			key: "",
+			lang: "en-US",
+			preventMarker: true,
+			limit: 5
+		});
+		geodjango_loc_gps.map.addControl(geocoder);
+		geocoder.on("addresschosen", function(event) {
+			const [lon, lat] = ol.proj.toLonLat(event.coordinate);
+			set_pos(lon, lat);
+		});
+
 		if (geodjango_loc_gps.featureCollection.array_.length > 0)
 			geodjango_loc_gps.featureCollection.array_[0].on("change", watch_point);
 
@@ -93,8 +114,6 @@
 		} else {
 			set_gps();
 		}
-
-
 
 		lon.addEventListener("change", function(event) {
 			set_pos(lon.value, lat.value);

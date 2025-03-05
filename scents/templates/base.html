@@ -25,6 +25,13 @@
                 </header>
                 {% block main %}
                 {% endblock %}
+                <footer>
+                    {% block footer %}
+                        <article>
+                            <small>Created at <a href="https://www.utia.cas.cz/">UTIA CAS</a>, implemented by <a href="https://veskrna.matfyz.cz">Lukáš Veškrna</a>.</small>
+                        </article>
+                    {% endblock %}
+                </footer>
             </main>
         {% endblock %}
     </body>
