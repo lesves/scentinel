@@ -21,7 +21,7 @@ services:
     volumes:
       - static:/app/static
       - data:/app/data
-#      - ${PWD}/.env:/app/.env
+      - ./.env:/app/.env
     depends_on:
       db:
         condition: service_healthy

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-@0rana#w&*xwy#c$gyaztya89+f!tl0jd*qgnoq)jjriuf_m7="
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-@0rana#w&*xwy#c$gyaztya89+f!tl0jd*qgnoq)jjriuf_m7=")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ("DEBUG", True)
+assert DEBUG or not SECRET_KEY.startswith("django-insecure-"), "please set SECRET_KEY when running in production"
 
-ALLOWED_HOSTS = []
+if DEBUG:
+    ALLOWED_HOSTS = []
+else:
+    ALLOWED_HOSTS = [os.environ["DOMAIN"]]
+    CSRF_TRUSTED_ORIGINS = [os.environ["ORIGIN"]]
 
 
 # Application definition
@@ -76,23 +82,25 @@ WSGI_APPLICATION = "scentinel.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "NAME": "scentinel",
-        "USER": "postgres",
-    },
-}
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#        'NAME': 'postgres',
-#        'USER': 'postgres',
-#        'PASSWORD': 'postgres',
-#        'HOST': "db",
-#        'PORT': 5432,
-#    }
-#}
+if DEBUG:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.contrib.gis.db.backends.postgis",
+            "NAME": "scentinel",
+            "USER": "postgres",
+        },
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': "db",
+            'PORT': 5432,
+        }
+    }
 
 
 # Password validation
