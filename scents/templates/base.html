@@ -16,6 +16,12 @@
             <main class="container">
                 <header>
                     <h1>Scentinel</h1>
+                    {% if request.user.is_authenticated %}
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <input type="submit" value="Log out" />
+                        </form>
+                    {% endif %}
                 </header>
                 {% block main %}
                 {% endblock %}

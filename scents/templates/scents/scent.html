@@ -16,9 +16,9 @@
 {% block main %}
 	<article>
 		<h2>Scent {{ object.sqid }}</h2>
-		{% comment %}{% if request.user.is_authenticated %}
+		{% if request.user.is_authenticated %}
 			<a role="button" href="{% url 'scent-edit' sqid=object.sqid %}">Edit</a>
-		{% endif %}{% endcomment %}
+		{% endif %}
 
 		<table>
 			<tr><th colspan="2">General Info</th></tr>
@@ -46,7 +46,7 @@
 		<h3>Attachments</h3>
 		<ul>
 			{% for attachment in object.attachments.all %}
-				<li><a href="{{ attachment.file.url }}">{{ attachment.file.url }}</a></li>
+				<li><a href="{{ attachment.file.url }}">{{ attachment.file }}</a></li>
 			{% endfor %}
 		</ul>
 	</article>

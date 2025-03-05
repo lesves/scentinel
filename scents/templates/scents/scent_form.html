@@ -22,55 +22,123 @@
 	</style>
 
 	<script>
-	function set_loc () {
-	    if (navigator.geolocation) {
-	        navigator.geolocation.getCurrentPosition(function (position) {
-	            const lat = position.coords.latitude;
-	            const lng = position.coords.longitude;
-	            const lonLat = ol.proj.fromLonLat([lng, lat]);
+	function watch_point(event) {
+		let coords = ol.proj.toLonLat(event.target.values_.geometry.flatCoordinates);
 
-	            const feature = new ol.Feature({
-	                geometry: new ol.geom.Point(lonLat),
-	            });
+		document.getElementById("lon").value = coords[0];
+		document.getElementById("lat").value = coords[1];
+	}
 
-	            geodjango_loc_gps.featureCollection.clear();
-	            geodjango_loc_gps.featureCollection.push(feature);
+	function set_pos(lon, lat) {
+		const lonLat = ol.proj.fromLonLat([lon, lat]);
+		document.getElementById("lon").value = lon;
+		document.getElementById("lat").value = lat;
 
-			    geodjango_loc_gps.map.setView(new ol.View({
-			        center: lonLat,
-			        zoom: 15
-			    }));
+		const feature = new ol.Feature({
+			geometry: new ol.geom.Point(lonLat),
+		});
 
-	            const inputField = document.getElementById("id_loc_gps");
-	            inputField.value = JSON.stringify({
-	            	type: "Point",
-	            	coordinates: lonLat
-	            });
-	        });
-	    } else {
-	        alert("Geolocation is not supported by your browser.");
-	    }
+		const style = new ol.style.Style({
+			image: new ol.style.Circle({
+				radius: 12,
+				fill: new ol.style.Fill({
+					color: "blue",
+				}),
+				stroke: new ol.style.Stroke({
+					color: "white",
+					width: 2,
+				}),
+			}),
+			zIndex: Infinity,
+		});
+
+		feature.setStyle(style);
+
+		geodjango_loc_gps.featureCollection.clear();
+		geodjango_loc_gps.featureCollection.push(feature);
+		geodjango_loc_gps.featureCollection.array_[0].on("change", watch_point);
+
+		geodjango_loc_gps.map.setView(new ol.View({
+			center: lonLat,
+			zoom: 15
+		}));
+
+		const inputField = document.getElementById("id_loc_gps");
+		inputField.value = JSON.stringify({
+			type: "Point",
+			coordinates: lonLat
+		});
+	}
+
+	function set_gps() {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				set_pos(position.coords.longitude, position.coords.latitude);
+			}, function(error) {
+				set_pos(14.4032022, 50.0883456);
+			});
+		} else {
+			set_pos(14.4032022, 50.0883456);
+		}
 	};
 
+	window.addEventListener("load", () => {
+		if (geodjango_loc_gps.featureCollection.array_.length > 0)
+			geodjango_loc_gps.featureCollection.array_[0].on("change", watch_point);
+
+		let lon = document.getElementById("lon");
+		let lat = document.getElementById("lat");
+		if (lon.value && lat.value) {
+			set_pos(lon.value, lat.value);
+		} else {
+			set_gps();
+		}
+
+
+
+		lon.addEventListener("change", function(event) {
+			set_pos(lon.value, lat.value);
+		});
+		lat.addEventListener("change", function(event) {
+			set_pos(lon.value, lat.value);
+		});
+	});
+
 	let form_num = 0;
-	function upload() {
+	function add_upload() {
 		let controls = document.getElementById("controls");
 
 		let item = document.createElement("article");
-		item.innerHTML = `<div class="grid">{{ attachments.empty_form.file }}{{ attachments.empty_form.note }}</div>`.replaceAll("__prefix__", form_num);
+		item.innerHTML = `<div class="grid">{{ attachments.empty_form.file }}{{ attachments.empty_form.note }}<button style="margin-bottom: var(--pico-spacing);" onclick="remove(event)">Remove</button></div>`.replaceAll("__prefix__", form_num);
 
 		let total = document.querySelector("#id_attachments-TOTAL_FORMS");
 
 		controls.parentNode.insertBefore(item.cloneNode(true), controls);
 
+		let field = document.getElementById(`id_attachments-${form_num}-file`);
+
 		form_num++;
 		total.setAttribute("value", `${form_num+1}`);
+		return field;
+	}
+
+	function remove(event) {
+		event.target.parentNode.parentNode.remove();
+	}
+
+	async function capture () {
+		let file_input = add_upload();
+		file_input.setAttribute("capture", "environment");
+		file_input.click();
+		
+		/*previewImage.src = URL.createObjectURL(file);
+		previewImage.style.display = "block";*/
 	}
 	</script>
 {% endblock %}
 
 {% block main %}
-	<form method="POST" enctype=multipart/form-data>
+	<form method="POST" enctype="multipart/form-data">
 		<article>
 			{% csrf_token %}
 			<fieldset>
@@ -95,7 +163,12 @@
 			<fieldset>
 				<h2>Location</h2>
 				{{ form.loc_gps }}
-				<button type="button" onclick="set_loc();">Use my location</button>
+				<div>
+				<table>
+					<tr><td>Longitude (X)</td><td><input type="number" step="any" id="lon" /></td></tr>
+					<tr><td>Latitude (Y)</td><td><input type="number" step="any" id="lat" /></td></tr>
+				</table>
+				<button type="button" onclick="set_gps();">Use my location</button>
 				<label>
 					{{ form.loc_desc.field.label }}
 					{{ form.loc_desc }}
@@ -131,8 +204,8 @@
 
 		<article id="controls">
 			<div role="group">
-				<button type="button" class="secondary">Take photo</button>
-				<button type="button" class="secondary" onclick="upload();">Upload photo/video</button>
+				<button type="button" class="secondary" onclick="capture()">Take photo</button>
+				<button type="button" class="secondary" onclick="add_upload();">Upload photo/video</button>
 			</div>
 
 			<input type="submit" />

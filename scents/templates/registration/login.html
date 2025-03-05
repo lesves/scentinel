@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block extrahead %}
+	<style>
+		.errorlist {
+			color: rgb(217, 53, 38);
+		}
+	</style>
+{% endblock %}
+
+
+{% block main %}
+	<article>
+		<h2>Log-in</h2>
+		<form method="post">
+			{% csrf_token %}
+			{{ form.as_table }}
+			<input type="submit" />
+		</form>
+	</article>
+{% endblock %}

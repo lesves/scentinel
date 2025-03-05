@@ -54,9 +54,17 @@ class Scent(models.Model):
 
 class Attachment(models.Model):
     def upload_to(instance, filename):
-        return "{}/{}".format(instance.user.id, filename)
+        return "{}/{}".format(instance.scent.sqid, filename)
 
     scent = models.ForeignKey(Scent, related_name="attachments", on_delete=models.CASCADE)
 
     file = models.FileField(upload_to=upload_to)
     note = models.TextField(blank=True, verbose_name="Note")
+
+
+from django.db.models.signals import post_delete
+from django.dispatch.dispatcher import receiver
+@receiver(post_delete, sender=Attachment)
+def attachment_delete(sender, instance, **kwargs):
+    if instance.file:
+        instance.file.delete(False)
