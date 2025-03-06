@@ -55,7 +55,7 @@
 		<h3>Actions</h3>
 		<div class="grid">
 			<a role="button" href="{% url 'scent-edit' sqid=object.sqid %}">Edit</a>
-			<a role="button">Add another scent</a>
+			<a role="button" href="{% url 'scent-add' %}">Add another scent</a>
 		</div>
 		{% endif %}
 	</article>
