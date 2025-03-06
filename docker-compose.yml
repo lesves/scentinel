@@ -20,7 +20,7 @@ services:
       - 8000
     volumes:
       - static:/app/static
-      - data:/app/data
+      - media:/app/media
       - ./.env:/app/.env
     depends_on:
       db:
@@ -30,7 +30,7 @@ services:
     build: ./nginx
     volumes:
       - static:/app/static/
-      - data:/app/data/
+      - media:/app/media/
     ports:
       - 1337:80
     depends_on:
@@ -38,5 +38,5 @@ services:
 
 volumes:
   db-data:
-  data:
+  media:
   static:
