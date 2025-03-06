@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.contrib.auth.models import User
 from django.urls import reverse
 
 from sqids import Sqids
@@ -25,6 +26,7 @@ class Scent(models.Model):
     # Scent data
     name = models.TextField(verbose_name="Scent name")
     author = models.TextField(verbose_name="Author")
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.SET_NULL, blank=True, null=True)
     
     scent_desc = models.TextField(verbose_name="Scent description")
     sampling_params = models.TextField(verbose_name="Sampling parameters", blank=True)

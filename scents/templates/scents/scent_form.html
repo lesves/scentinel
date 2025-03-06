@@ -107,10 +107,15 @@
 		if (geodjango_loc_gps.featureCollection.array_.length > 0)
 			geodjango_loc_gps.featureCollection.array_[0].on("change", watch_point);
 
-		let lon = document.getElementById("lon");
-		let lat = document.getElementById("lat");
+		const lon = document.getElementById("lon");
+		const lat = document.getElementById("lat");
+		const inputField = document.getElementById("id_loc_gps");
+
 		if (lon.value && lat.value) {
 			set_pos(lon.value, lat.value);
+		} else if (inputField.value) {
+			const [lon_, lat_] = ol.proj.toLonLat(JSON.parse(inputField.value).coordinates);
+			set_pos(lon_, lat_);
 		} else {
 			set_gps();
 		}
@@ -169,6 +174,10 @@
 				<label>
 					{{ form.author.field.label }}
 					{{ form.author }}
+				</label>
+				<label>
+					{{ form.user.field.label }}
+					{{ form.user }}
 				</label>
 				<label>
 					{{ form.scent_desc.field.label }}

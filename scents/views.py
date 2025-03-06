@@ -6,15 +6,18 @@ from django.forms import inlineformset_factory
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
-from .models import Scent, Attachment
+from .models import User, Scent, Attachment
 
 
 class ScentForm(forms.ModelForm):
+	user = forms.ModelChoiceField(label=Scent._meta.get_field("user").verbose_name.title(), queryset=User.objects.all(), disabled=True)
+
 	class Meta:
 		model = Scent
 		fields = [
 			"name",
 			"author",
+			"user",
 			"scent_desc",
 			"sampling_params",
 
@@ -53,6 +56,11 @@ class ScentCreateView(LoginRequiredMixin, CreateView):
 			data["attachments"] = AttachmentFormSet()
 		return data
 
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs.update({"initial": dict(user=self.request.user)})
+		return kwargs
+
 	def form_valid(self, form):
 		context = self.get_context_data()
 		attachments = context["attachments"]
@@ -80,6 +88,11 @@ class ScentUpdateView(LoginRequiredMixin, UpdateView):
 		else:
 			data["attachments"] = AttachmentFormSet(instance=self.object)
 		return data
+
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs.update({"initial": dict(user=self.request.user)})
+		return kwargs
 
 	def form_valid(self, form):
 		context = self.get_context_data()
